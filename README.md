@@ -1,2 +1,2 @@
 # Machine-Learning
-Some jupiter notebooks that introduces the bases of machine learning / prediction models
+Repositorio para alojar en formato web algunos proyectos de analisis de datos y machine learning

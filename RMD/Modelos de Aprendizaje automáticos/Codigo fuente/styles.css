@@ -1,0 +1,73 @@
+/*Título del Rmarkdown*/
+h1.title {
+    font-size: 28pt;
+    color: #1a3988;
+    text-align: center;
+}
+
+/*Cabezera con dos ## */
+h2 {
+    font-size: 20pt;
+    color: #1857ae;
+    text-align: center;
+}
+/* Imagenes*/
+/*img {
+    border-radius: 8px;
+    max-width: 100%;
+    height: auto;
+    width: 55%;
+}*/
+
+.hljs-string {
+    color: limegreen;
+}
+
+.hljs-keyword {
+    color: mediumpurple;
+}
+
+h3 {
+    font-size: 15pt;
+    color: #398dd1;
+}
+
+/*Nombre y fecha*/
+h4 {
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+h5 {
+    font-size: 13pt;
+    color: #7ab4e2;
+    text-align: center;
+    font-weight: bold;
+}
+
+h6 {
+    font-size: 16pt;
+    color: #7ab4e2;
+    text-align: center;
+    font-weight: bold;
+}
+
+/*Texto normal*/
+p {
+    font-size: 11pt;
+    text-align: justify;
+}
+
+/*Codigo R*/
+pre{
+    font-size: 12px;
+}
+
+    .emphasized {
+    font-size: 11pt;
+}
+
+/*Notación de nota*/
+blockquote {
+    border-left: 5px solid #1857ae;
+}

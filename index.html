@@ -41,6 +41,35 @@
             height: auto;
             margin-bottom: 10px;
         }
+
+        .github-link {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: 1px solid #3498db;
+            padding: 5px;
+            background-color: white;
+        }
+
+        .github-link a {
+            text-decoration: none; /* Quitar la subrayado del texto */
+            color: #0065a4; /* Color del texto */
+        }
+
+        .github-link img {
+            vertical-align: middle;
+            width: 30px;
+            height: 30px;
+        }
+
+        .github-link span {
+            font-weight: bold;
+        }
+
     </style>
 </head>
 <body>
@@ -60,6 +89,15 @@
         <div class="button" onclick="window.location.href='https://archerd6.github.io/Machine-Learning/Jupyter/Principal%20component%20analysis/Principal%20component%20analysis.html'">
             <img src="Images/3 - PCA.jpg" alt="Descripción de la primera página">
             PCA
+        </div>
+
+        <div class="github-link">
+            <a href="https://github.com/Archerd6/Machine-Learning" target="_blank">
+                <img src="Images/0 - GitHub.png" alt="Logo de GitHub" width="30" height="30">
+                &nbsp;
+
+                GitHub
+            </a>
         </div>
         
     </div>

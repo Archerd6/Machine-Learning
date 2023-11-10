@@ -1,0 +1,141 @@
+---
+title:                          "Análisis de supervivencia y ML"
+subtitle: |
+          | Herramientas y Algoritmos en Bioinformática
+          | Ingeniería de la Salud
+
+author: |
+         &nbsp; &nbsp; &nbsp;
+         &nbsp; &nbsp; &nbsp;
+
+date:   |
+         &nbsp; &nbsp; &nbsp;
+         &nbsp; &nbsp; &nbsp;
+                                     `r format(Sys.time(), ' %d - %m - %Y')`
+
+output:
+  html_document:
+    number_sections: true
+    toc: true
+    toc_float: true
+    df_print: paged
+
+params:
+  NOTE: "<div class='alert alert-info'> " # blue: Accessory info to notice or skim
+  TIP: "<div class='alert alert-success'>**TIP!** " # green: info to be more successful
+  WARN: "<div class='alert alert-warning'>**WARNING!** " # yellow: potential negative consequences
+  DANGER: "<div class='alert alert-danger'>**DANGER!** " # red: action with dangerous consequences
+  # they can also be defined as params: or launchend in render() as params=list(...)
+
+css: styles.css
+---
+
+<!-- Configuracion para cargar las librerías, cargar los datos y visualizarlos -->
+```{r Config, child='Rmds/10_Configuracion_Inicial.Rmd'}
+
+```
+
+<!-- Informacion de los datos -->
+```{r Info, child='Rmds/20_Informacion_de_datos.Rmd'}
+
+```
+
+<!-- Modificación de los datos -->
+```{r Modif, child='Rmds/30_Modificacion_de_datos.Rmd'}
+
+```
+
+<!-- Analisis de supervivencia -->
+```{r Surv, child='Rmds/40_Analisis_de_supervivencia.Rmd'}
+
+```
+
+
+<!-- Uso de la informcacion genetica -->
+```{r Gen, child='Rmds/50_Informacion_Genetica.Rmd'}
+
+```
+
+
+<!-- Machine learning con Python -->
+```{r Py, child='Rmds/60_Machine_learning.Rmd'}
+
+```
+
+
+
+```{python}
+# Realizamos predicciones en el conjunto de Test
+pred_y = neigh.predict(X_test)
+```
+
+
+```{python fig.height=8, fig.width=10}
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+mostrar_resultados(y_test, y_pred)
+
+print("Classification Report: \n \n", classification_report(y_test, y_pred))
+```
+
+
+<br>
+
+### Random Forest Classification
+
+Entrenamos el modelo
+
+```{python}
+from sklearn.ensemble import RandomForestClassifier
+
+rfc = RandomForestClassifier()
+rfc.fit(X_train, y_train)
+```
+
+```{python}
+# Predicción en el conjunto de test
+y_pred = rfc.predict(X_test)
+```
+
+##### Evaluación del modelo {-}
+
+```{python}
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+mostrar_resultados(y_test, y_pred)
+
+print("Classification Report: \n \n", classification_report(y_test, y_pred))
+```
+
+
+
+
+<br>
+
+### Decision Trees
+
+Entrenamos el modelo
+
+
+```{python}
+from sklearn import tree
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(X_train, y_train)
+```
+
+```{python}
+# Predicción en el conjunto de test
+y_pred = clf.predict(X_test)
+```
+
+##### Evaluación del modelo {-}
+
+```{python}
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+mostrar_resultados(y_test, y_pred)
+
+print("Classification Report: \n \n", classification_report(y_test, y_pred))
+```
+
+

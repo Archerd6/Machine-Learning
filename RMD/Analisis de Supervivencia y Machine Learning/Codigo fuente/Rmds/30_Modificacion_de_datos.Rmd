@@ -1,0 +1,251 @@
+
+# Modificación del dataset
+
+<br>
+
+###### Eliminamos columnas que no dan información relevante {-}
+```{r}
+brcaData.cl$days_to_last_known_alive <- NULL # Columna sin  apenas  información
+brcaData.cl$`Composite Element REF`  <- NULL # Columna repetida sin información
+brcaData.cl$tumor_tissue_site        <- NULL # Columna repetida (Breast Cancer)
+
+```
+
+<br>
+
+Unimos las columnas de `days_to_death` y `days_to_last_followup` que son complementarias para hacer la columna de `Tiempo`, que será necesaria para el análisis de supervivencia.
+
+```{r}
+first <- brcaData.cl$days_to_death
+first[is.na(first)] <- ""             # Todos los nulos como cadena vacía
+  
+second <- brcaData.cl$days_to_last_followup
+second[is.na(second)] <- ""            # Todos los nulos como cadena vacía
+```
+
+Eliminamos las dos columnas y creamos la nueva
+
+```{r}
+brcaData.cl$days_to_death         <- NULL
+brcaData.cl$days_to_last_followup <- NULL
+
+brcaData.cl["Tiempo"] <- c(as.numeric(trimws(paste(first,second))))
+```
+
+<br>
+
+##### Visualización del todo el conjunto {-}
+
+```{r}
+brcaData.cl <- brcaData.cl[, c(1,2,3,11,14,4,5,6,7,8,9,10,12,13)] # Cambio el orden de algunas columnas para que se vean primero
+brcaData.cl
+```
+
+<br>
+
+<h2 class="R3">Cálculo del valor del estadio </h2>
+
+Los códigos utilizados para las adaptaciones de las columnas utilizan la librería de `dplyr` para poder calcular el valor del estadio siguiendo la literatura de referencia [1](https://www.cancer.net/es/tipos-de-c%C3%A1ncer/c%C3%A1ncer-de-mama/estadios).
+
+
+<br>
+
+    T_stage
+
+```{r}
+summary(brcaData.cl$pathology_T_stage)
+brcaData.cl$pathology_T_stage <- brcaData.cl %>%
+          select("pathology_T_stage") %>%
+          mutate(pathology_T_stage = recode_factor(
+            pathology_T_stage,
+            `t1` = "T1",
+            `t1a` = "T1",
+            `t1b` = "T1",
+            `t1c` = "T1",
+            `t2` = "T2",
+            `t2a` = "T2",
+            `t2b` = "T2",
+            `t3` = "T3",
+            `t3a` = "T3",
+            `t4` = "T4",
+            `t4b` = "T4",
+            `t4d` = "T4",
+            `tx` = "tx",
+            .default = "tx"
+          ))
+summary(brcaData.cl$pathology_T_stage)
+```
+
+<br>
+
+    N_stage
+
+```{r}
+summary(brcaData.cl$pathology_N_stage)
+brcaData.cl$pathology_N_stage <- brcaData.cl %>%
+          select("pathology_N_stage") %>%
+          mutate(pathology_N_stage = recode_factor(
+            pathology_N_stage,
+            `n0` = "n0",
+            `n0 (i-)` = "n0",
+            `n0 (i+)` = "n0",
+            `n0 (mol+)` = "n0",
+            `n1` = "n1",
+            `n1a` = "n1",
+            `n1b` = "n1",
+            `n1c` = "n1",
+            `n1mi` = "n1",
+            `n2` = "n2",
+            `n2a` = "n2",
+            `n3` = "n3",
+            `n3a` = "n3",
+            `n3b` = "n3",
+            `n3c` = "n3",
+            `nx` = "n0",
+            .default = NA_character_
+          ))
+summary(brcaData.cl$pathology_N_stage)
+```
+
+<br>
+
+    M_stage
+
+```{r}
+summary(brcaData.cl$pathology_M_stage)
+brcaData.cl$pathology_M_stage <- brcaData.cl %>%
+          select("pathology_M_stage") %>%
+          mutate(pathology_M_stage = recode_factor(
+            pathology_M_stage,
+            `m0` = "m0",
+            `cm0 (i+)` = "m0",
+            `m1` = "m1",
+            `mx` = "m0",
+            .default = NA_character_
+          ))
+summary(brcaData.cl$pathology_M_stage)
+```
+
+<br>
+
+A continuación se establecen varios conjuntos de condiciones (obtenidos de la literatura de referencia [1](https://www.cancer.net/es/tipos-de-c%C3%A1ncer/c%C3%A1ncer-de-mama/estadios)) para los distintos estadios del cáncer, asignando el estadio correspondiente a la columna `pathologic_stage` dependiendo de los valores de `pathology_T_stage`, `pathology_N_stage` y `pathology_M_stage`
+
+```{r}
+brcaData.cl$pathologic_stage <- as.character(brcaData.cl$pathologic_stage)
+
+for (i in 1:nrow(brcaData.cl)) {
+  if (as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i])=="tx" & as.character(brcaData.cl$pathology_N_stage$pathology_N_stage[i]) == "n0" &
+      as.character(brcaData.cl$pathology_M_stage$pathology_M_stage[i])=="m0") {
+    brcaData.cl[i,3] <- "Estadio 0"
+  }
+  
+  if (as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i])=="T1" & as.character(brcaData.cl$pathology_N_stage$pathology_N_stage[i]) == "n0" &
+      as.character(brcaData.cl$pathology_M_stage$pathology_M_stage[i])=="m0") {
+    brcaData.cl[i,3] <- "Estadio IA"
+  }
+  
+  if (as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i])=="T0" & as.character(brcaData.cl$pathology_N_stage$pathology_N_stage[i]) == "n1" &
+      as.character(brcaData.cl$pathology_M_stage$pathology_M_stage[i])=="m0") {
+    brcaData.cl[i,3] <- "Estadio IB"
+  }
+  
+  if (as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i])=="T1" & as.character(brcaData.cl$pathology_N_stage$pathology_N_stage[i]) == "n1" &
+      as.character(brcaData.cl$pathology_M_stage$pathology_M_stage[i])=="m0") {
+    brcaData.cl[i,3] <- "Estadio IB"
+  }
+  
+  if (as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i])=="T2" & as.character(brcaData.cl$pathology_N_stage$pathology_N_stage[i]) == "n0" &
+      as.character(brcaData.cl$pathology_M_stage$pathology_M_stage[i])=="m0") {
+    brcaData.cl[i,3] <- "Estadio IIA"
+  }
+  
+  if (as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i])=="T2" & as.character(brcaData.cl$pathology_N_stage$pathology_N_stage[i]) == "n1" &
+      as.character(brcaData.cl$pathology_M_stage$pathology_M_stage[i])=="m0") {
+    brcaData.cl[i,3] <- "Estadio IIB"
+  }
+  
+  if (as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i])=="T3" & as.character(brcaData.cl$pathology_N_stage$pathology_N_stage[i]) == "n0" &
+      as.character(brcaData.cl$pathology_M_stage$pathology_M_stage[i])=="m0") {
+    brcaData.cl[i,3] <- "Estadio IIB"
+  }
+  
+  if ((as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i])== "tx" | as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i])=="T1" |
+      as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i]) == "T2" | as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i])=="T3") &
+      as.character(brcaData.cl$pathology_N_stage$pathology_N_stage[i]) == "n2" & as.character(brcaData.cl$pathology_M_stage$pathology_M_stage[i])=="m0") {
+    brcaData.cl[i,3] <- "Estadio IIIA"
+  }
+  
+  if (as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i]) == "T3" & as.character(brcaData.cl$pathology_N_stage$pathology_N_stage[i]) == "n1" &
+      as.character(brcaData.cl$pathology_M_stage$pathology_M_stage[i]) == "m0") {
+    brcaData.cl[i,3] <- "Estadio IIIA"
+  }
+  
+  if (as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i]) == "T4" &
+     (as.character(brcaData.cl$pathology_N_stage$pathology_N_stage[i]) == "n0" | as.character(brcaData.cl$pathology_N_stage$pathology_N_stage[i]) == "n1" |
+      as.character(brcaData.cl$pathology_N_stage$pathology_N_stage[i]) == "n2") & as.character(brcaData.cl$pathology_M_stage$pathology_M_stage[i])== "m0") {
+    brcaData.cl[i,3] <- "Estadio IIIB"
+  }
+
+  if ((as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i])== "tx" | as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i])=="T1" |
+      as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i]) == "T2" | as.character(brcaData.cl$pathology_T_stage$pathology_T_stage[i])=="T3") &
+      as.character(brcaData.cl$pathology_N_stage$pathology_N_stage[i]) == "n3" & as.character(brcaData.cl$pathology_M_stage$pathology_M_stage[i])=="m0") {
+    brcaData.cl[i,3] <- "Estadio IIIC"
+  }
+  
+  if (as.character(brcaData.cl$pathology_M_stage$pathology_M_stage[i])=="m1") {
+    brcaData.cl[i,3] <- "Estadio IV (metastásico)"
+  }
+  
+}
+
+brcaData.cl$pathologic_stage <- as.factor(brcaData.cl$pathologic_stage)
+summary(brcaData.cl$pathologic_stage)
+```
+
+
+```{r include = FALSE}
+brcaData.cl$pathology_T_stage <- brcaData.cl$pathology_T_stage$pathology_T_stage
+brcaData.cl$pathology_N_stage <- brcaData.cl$pathology_N_stage$pathology_N_stage
+brcaData.cl$pathology_M_stage <- brcaData.cl$pathology_M_stage$pathology_M_stage
+```
+
+
+<br>
+
+Visualizamos como ha quedado finalmente la tabla con los distintos estadios:
+
+```{r}
+df <- data.frame(brcaData.cl$pathologic_stage, brcaData.cl$pathology_T_stage, brcaData.cl$pathology_N_stage, brcaData.cl$pathology_M_stage)
+
+# Asignación de nombres a las columnas del dataset
+colnames(df) <- c('Pathologic stage','T stage','N stage','M stage')
+df
+```
+
+<br>
+
+<h2 class="R3"> Discretizar </h2>
+
+La discretización es importante para mejorar la interpretación, la estabilidad estadística y la comparabilidad de los resultados en un análisis de supervivencia (que veremos a continuación).
+
+```{r}
+summary(brcaData.cl$date_of_initial_pathologic_diagnosis)
+
+m <- max(brcaData.cl[,10],na.rm = T)
+n <- min(brcaData.cl[,10],na.rm = T)
+
+sequencia <- seq(n,m,by=5)
+
+sequencia
+
+brcaData.cl <- brcaData.cl %>%
+  mutate(date_of_initial_pathologic_diagnosis = ifelse(date_of_initial_pathologic_diagnosis < 1993,
+		"Old_diag", ifelse(date_of_initial_pathologic_diagnosis < 2003,
+		                  "Mid_diag","Rec_diag")))
+
+
+```
+
+<br>
+<br>
+<br>

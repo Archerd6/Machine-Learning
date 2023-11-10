@@ -1,0 +1,80 @@
+
+# Análisis de supervivencia
+
+<h2 class="R3"> Curva de supervivencia sin ninguna variable </h2>
+
+```{r}
+fit <- survfit(Surv(Tiempo, vital_status) ~ 1, data = brcaData.cl) # No coge ninguna variable
+
+p <- ggsurvplot(fit, conf.int = TRUE, censor = TRUE, cex.axis=3.0,
+cex.lab=3.0, main = "Survival curve")
+
+last_plot() # Acceder al último gráfico generado
+```
+
+<br>
+
+El resultado del análisis que obtenemos con `survfit` es una tabla que muestra la supervivencia a lo largo del tiempo. Esta tabla tiene información sobre distintos puntos en un tiempo específico y muestra el número de personas en riesgo, el número de eventos (en este caso, muertes), la tasa de supervivencia, el error estándar, y los límites inferior y superior del intervalo de confianza del 95%.
+
+Con la información en esta tabla se puede observar la tasa de supervivencia a lo largo del tiempo y cómo va cambiando con el plot realizado con `ggsurvplot`.
+
+<br>
+
+<h2 class="R3"> Curva de supervivencia con la fecha de diagnóstico como variable </h2>
+
+```{r fig.height=6, fig.width=10, fig.align='center', dev = "svg"}
+fit <- survfit(Surv(Tiempo, vital_status) ~ date_of_initial_pathologic_diagnosis, data = brcaData.cl)
+
+p <- ggsurvplot(fit, conf.int = TRUE, censor = TRUE, cex.axis=3.0,
+cex.lab=3.0, main = "Survival curve")
+
+last_plot() # Acceder al último gráfico generado
+```
+
+<br>
+
+En el gráfico se puede observar la tasa de supervivencia a lo largo del tiempo. Con la curva se puede observar la tasa de supervivencia en función de la fecha de diagnóstico. Se puede apreciar que al principio la tasa de supervivencia es alta, pero a medida que pasa el tiempo va disminuyendo. También se puede observar que los intervalos de confianza son estrechos al principio, pero se amplían a medida que pasa el tiempo. Esto indica que al principio hay menos incertidumbre en la tasa de supervivencia, pero a medida que pasa el tiempo, la incertidumbre aumenta.
+
+Podemos ver que la característica más significativa está en que los diagnósticos más recientes tienen una mayor probabilidad de supervivencia, con intervalos de confianza mucho mas reducidos, hasta donde podemos ver con los registros que tienen los datos.
+
+<br>
+
+<h2 class="R3"> Regresión de Cox </h2>
+
+<details style="background-color: azure; border: 2px solid azure1; border-radius: 5px; padding: 10px 10px 10px 10px;">
+<summary markdown="span" style="background-color: azure; color: #398dd1; padding: 3px 2px 3px 2px;"> Información de la regresión de Cox </summary>
+
+La regresión de Cox es una técnica estadística utilizada para analizar la supervivencia en relación con una o varias variables de interés.
+
+El resultado de la regresión son unas tablas que muestran los coeficientes de la regresión, sus exponentes, los errores estándar, los valores z y los p-valores.
+
+Las tablas muestran coeficientes de regresión, uno para la variable `date_of_initial_pathologic_diagnosisOld_diag` y `date_of_initial_pathologic_diagnosisRec_diag`. Los coeficientes de regresión indican cómo cambia la tasa de supervivencia en relación con cada variable.
+
+</details>
+
+<br>
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+
+res.cox <- coxph(Surv(Tiempo, vital_status) ~ date_of_initial_pathologic_diagnosis, data=brcaData.cl) # Cox en vez de kaplan meier (Ahora pueden aparecer más elementos)
+summary(res.cox)
+```
+
+En este caso, se observa que el coeficiente para `date_of_initial_pathologic_diagnosisOld_diag` es negativo (-0.6486) y para `date_of_initial_pathologic_diagnosisRec_diag` es -0.9925, lo que indica que la tasa de supervivencia disminuye a medida que aumenta la variable `date_of_initial_pathologic_diagnosisOld_diag` y `date_of_initial_pathologic_diagnosisRec_diag`, es decir, a medida que la fecha de diagnóstico se va haciendo más antigua, la tasa de supervivencia disminuye. Los exponentes de los coeficientes (exp(coef)) indican el cambio en la tasa de supervivencia por cada unidad de cambio en la variable.
+
+<br>
+
+```{r fig.align='center'}
+temp <- cox.zph(res.cox) #print(temp)
+plot(temp)
+res.cox
+```
+
+
+Los valores z y p-valores proporcionan información sobre la significancia estadística de cada coeficiente. Los valores z se calculan dividiendo el coeficiente por su error estándar y el p-valor indica la probabilidad de obtener un valor z igual o más extremo que el observado si la verdadera relación entre las variables es nula.
+
+Por tanto, la regresión de Cox permite analizar la relación entre la tasa de supervivencia y una o varias variables de interés. En este caso, se ha analizado la relación entre la tasa de supervivencia y la variable `date_of_initial_pathologic_diagnosis` y se ha encontrado que a medida que la fecha de diagnóstico se va haciendo más antigua, la tasa de supervivencia disminuye de manera estadísticamente significativa.
+
+<br>
+<br>
+<br>

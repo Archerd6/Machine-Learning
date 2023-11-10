@@ -1,0 +1,96 @@
+/* Titulo del Rmarkdown */
+h1.title {
+    font-size: 28pt;
+    color: #1a3988;
+    text-align: center;
+    line-height: 15px;
+}
+
+/* Cabezera con una # */
+h1 {
+    font-size: 22pt;
+    color: #184d98;
+    text-align: center;
+    line-height: 5px;
+}
+
+/* Cabezera con dos ## */
+h2 {
+    font-size: 20pt;
+    color: #1857ae;
+    text-align: center;
+}
+
+.pyhton2 {
+    font-size: 15pt;
+    color: #398dd1;
+    text-align: center;
+}
+
+/* Subtitulo y Cabezera con tres ### */
+h3 {
+    font-size: 15pt;
+    color: #398dd1;
+    text-align: center;
+}
+
+/* Subtitulo y Cabezera con tres ### */
+.R3 {
+    font-size: 15pt;
+    color: #398dd1;
+    text-align: center;
+}
+
+/*Nombre y Fecha*/
+h4 {
+    color: #163276;
+    font-size: 10pt;
+    font-weight: bold;
+    line-height: 8px;
+}
+
+/* Cabezera con cinco ##### */
+h5 {
+    font-size: 13pt;
+    color: #7ab4e2;
+    text-align: center;
+    /* font-weight: bold; */
+}
+
+/* Cabezera con seis ###### */
+h6 {
+    font-size: 11pt;
+    color: #7ab4e2;
+    text-align: center;
+}
+
+/* Texto normal */
+p {
+    font-size: 11pt;
+    text-align: justify;
+}
+
+/* Codigo R */
+pre {
+    font-size: 12px;
+}
+
+/* Enfatizado */
+.emphasized {
+    font-size: 11pt;
+}
+
+/* Cadena de texto */
+.hljs-string {
+    color: limegreen;
+}
+
+/* Color de library() */
+.hljs-keyword {
+    color: mediumpurple;
+}
+
+/* Notacion de cita */
+blockquote {
+    border-left: 5px solid #1857ae;
+}

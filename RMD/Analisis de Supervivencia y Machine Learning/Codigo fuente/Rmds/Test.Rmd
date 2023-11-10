@@ -1,0 +1,120 @@
+
+```{r include = FALSE}
+suppressMessages(library(RTCGAToolbox)) # Datos utilizados (The Cancer Genome Atlas)
+suppressMessages(library(dplyr))        # Librería usada para la manipulacion de tablas
+suppressMessages(library(kableExtra))   # Librería usada para generar tablas
+suppressMessages(library(survival))     # Librería base  para  analisis  de supervivencia
+suppressMessages(library(survminer))    # Librería usada para las curvas de supervivencia
+```
+
+```{r include = FALSE}
+suppressMessages(library(RColorBrewer))
+```
+
+```{r include = FALSE}
+load("../brcaData.RData")
+
+brcaData.cl <- getData(brcaData, "clinical")                # Datos Clínicos
+
+brcaData.gene <- brcaData@RNASeq2GeneNorm[[1]]@DataMatrix   # Datos Genómicos
+```
+
+```{r include = FALSE}
+# Conjunto de datos numéricos
+brcaData.cl$years_to_birth <- as.double(brcaData.cl$years_to_birth)
+brcaData.cl$days_to_death <- as.double(brcaData.cl$days_to_death)
+brcaData.cl$days_to_last_followup <- as.double(brcaData.cl$days_to_last_followup)
+brcaData.cl$date_of_initial_pathologic_diagnosis <- as.integer(brcaData.cl$date_of_initial_pathologic_diagnosis)
+brcaData.cl$number_of_lymph_nodes <- as.double(brcaData.cl$number_of_lymph_nodes)
+
+
+# Conjunto de datos lógicos
+brcaData.cl$vital_status <- as.logical(as.integer(brcaData.cl$vital_status))
+brcaData.cl$radiation_therapy <- ifelse(brcaData.cl$radiation_therapy=="yes",1,0)
+brcaData.cl$radiation_therapy <- as.logical(as.integer(brcaData.cl$radiation_therapy))
+
+
+# Conjunto de datos de tipo factor
+brcaData.cl$`Composite Element REF` <- as.factor(brcaData.cl$`Composite Element REF`)
+brcaData.cl$tumor_tissue_site <- as.factor(brcaData.cl$tumor_tissue_site)
+brcaData.cl$pathologic_stage <- as.factor(brcaData.cl$pathologic_stage)
+brcaData.cl$pathology_T_stage <- as.factor(brcaData.cl$pathology_T_stage)
+brcaData.cl$pathology_N_stage <- as.factor(brcaData.cl$pathology_N_stage)
+brcaData.cl$pathology_M_stage <- as.factor(brcaData.cl$pathology_M_stage)
+brcaData.cl$gender <- as.factor(brcaData.cl$gender)
+brcaData.cl$histological_type <- as.factor(brcaData.cl$histological_type)
+brcaData.cl$race <- as.factor(brcaData.cl$race)
+brcaData.cl$ethnicity <- as.factor(brcaData.cl$ethnicity)
+```
+
+```{r include = FALSE}
+simple_table <- function(df) {
+  knitr::kable(summary(df)) %>% kable_minimal()
+}
+```
+
+```{r include = FALSE}
+brcaData.cl.double <- brcaData.cl[c("years_to_birth", "days_to_death", "days_to_last_followup", "date_of_initial_pathologic_diagnosis", "number_of_lymph_nodes")]
+
+simple_table(brcaData.cl.double)
+```
+
+```{r include = FALSE}
+brcaData.cl.logical <- brcaData.cl[c("vital_status", "radiation_therapy")]
+
+simple_table(brcaData.cl.logical)
+```
+
+
+```{r include = FALSE}
+brcaData.cl.factor <- brcaData.cl[c("Composite Element REF", "tumor_tissue_site", "pathologic_stage", "pathology_T_stage", "pathology_N_stage", "pathology_M_stage", "gender", "histological_type", "race", "ethnicity")]
+
+colnames <- c("Composite Element REF","tumor_tissue_site") ## Identificadores
+simple_table(brcaData.cl.factor[colnames])
+```
+
+
+```{r include = FALSE}
+simple_table(brcaData.cl.factor[c("gender")])
+```
+
+
+```{r include = FALSE}
+simple_table(brcaData.cl.factor[c("pathology_M_stage", "race", "ethnicity")])
+```
+
+
+```{r include = FALSE}
+simple_table(brcaData.cl.factor[c("histological_type", "pathologic_stage","pathology_T_stage","pathology_N_stage")])
+```
+
+
+```{r include = FALSE}
+brcaData.cl$days_to_last_known_alive <- NULL # Columna sin  apenas  información
+brcaData.cl$`Composite Element REF`  <- NULL # Columna repetida sin información
+brcaData.cl$tumor_tissue_site        <- NULL # Columna repetida (Breast Cancer)
+
+```
+
+
+```{r include = FALSE}
+first <- brcaData.cl$days_to_death
+first[is.na(first)] <- ""             # Todos los nulos como cadena vacía
+  
+second <- brcaData.cl$days_to_last_followup
+second[is.na(second)] <- ""            # Todos los nulos como cadena vacía
+```
+
+
+```{r include = FALSE}
+brcaData.cl$days_to_death         <- NULL
+brcaData.cl$days_to_last_followup <- NULL
+
+brcaData.cl["Tiempo"] <- c(as.numeric(trimws(paste(first,second))))
+```
+
+
+```{r include = FALSE}
+brcaData.cl <- brcaData.cl[, c(1,2,3,11,14,4,5,6,7,8,9,10,12,13)] # Cambio el orden de algunas columnas para que se vean primero
+brcaData.cl
+```

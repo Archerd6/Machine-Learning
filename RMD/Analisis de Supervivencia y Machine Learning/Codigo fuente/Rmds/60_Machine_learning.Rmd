@@ -1,0 +1,243 @@
+
+# Machine Learning con Pyhton
+
+<br>
+
+Machine learning es una rama de la inteligencia artificial que se enfoca en el desarrollo de sistemas y algoritmos capaces de aprender y mejorar automáticamente a partir de la experiencia, sin necesidad de ser programados específicamente.
+
+Python es un lenguaje de programación muy popular para el machine learning debido a su gran cantidad de bibliotecas y herramientas disponibles para este propósito, por lo que en esta parte usaré este lenguaje.
+
+<br>
+
+
+<h5 class="pyhton2">Librerías necesarias </h2>
+
+
+
+La siguientes librerías son las utilizadas en este trabajo, siendo además usadas para varios desarrollo de proyectos de machine learning en Python.
+
+<details style="background-color: azure; border: 2px solid azure1; border-radius: 5px; padding: 10px 10px 10px 10px;">
+<summary markdown="span" style="background-color: azure; color: #398dd1; padding: 3px 2px 3px 2px;"> Información de cada una de las librerías: </summary>
+
+- Numpy es una librería que proporciona herramientas utiles para trabajar con vectores y matrices multidimensionales de froma eficiente. Es esencial para el procesamiento numérico y la computación científica en Python.
+
+- Pandas es una librería que proporciona estructuras de datos y herramientas para el análisis de datos en Python. Es muy útil para el tratamiento y limpieza de datos, así como para el manejo de datos en formato csv, excel, entre otros.
+
+- Matplotlib es una librería que proporciona herramientas para la creación de gráficos y visualizaciones en Python. Es muy útil para la exploración y el análisis de datos.
+
+- Seaborn es una librería basada en Matplotlib que proporciona una interfaz de alto nivel para la creación de gráficos estadísticos en Python. Es especialmente útil para la visualización de datos estadísticos y tendencias en los datos.
+
+- Scikit-learn es una librería de aprendizaje automático de código abierto para Python. Proporciona una amplia variedad de algoritmos de aprendizaje supervisado y no supervisado, como regresión, clasificación, agrupamiento, reducción de dimensionalidad y selección de características.
+
+</details>
+
+
+
+###### Instalación {-}
+
+```{python}
+# !pip3 install numpy
+# !pip3 install pandas
+# !pip3 install matplotlib
+# !pip3 install seaborn
+# !pip3 install sklearn
+```
+
+###### Carga {-}
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
+
+
+<br>
+
+
+
+<h5 class="pyhton2">Adquisición de los datos </h2>
+
+
+```{python}
+import pandas as pd
+prostate_df = pd.read_csv("Breast_Cancer.csv", index_col=0)
+
+# Comprobación de los datos
+prostate_df.shape
+prostate_df.head()
+prostate_df.info()
+```
+
+Como podemos ver, las variables `character` aparecen como `object`. Para poder realizar machine learning correctamente debemos hacer una codificación a valores numéricos, con los que funcionan mejor la mayoría de algoritmos de machine learning.
+
+<br>
+<br>
+
+## Label encoder {.tabset .tabset-fade .tabset-pills}
+
+Para la realización de lo comentado anteriormente, voy a utilizar una librería de python: `LabelEncoder`  convierte variables categóricas en numéricas.
+
+```{python}
+# Import label encoder
+from sklearn.preprocessing import LabelEncoder
+
+# Create label encoder object
+label_encoder = LabelEncoder()
+
+df = prostate_df.copy()
+
+# Encode labels in different columns
+prostate_df['vital_status'] = label_encoder.fit_transform(prostate_df['vital_status'])
+prostate_df['pathologic_stage'] = label_encoder.fit_transform(prostate_df['pathologic_stage'])
+prostate_df['pathology_T_stage'] = label_encoder.fit_transform(prostate_df['pathology_T_stage'])
+prostate_df['pathology_N_stage'] = label_encoder.fit_transform(prostate_df['pathology_N_stage'])
+prostate_df['pathology_M_stage'] = label_encoder.fit_transform(prostate_df['pathology_M_stage'])
+prostate_df['gender'] = label_encoder.fit_transform(prostate_df['gender'])
+prostate_df['radiation_therapy'] = label_encoder.fit_transform(prostate_df['radiation_therapy'])
+prostate_df['histological_type'] = label_encoder.fit_transform(prostate_df['histological_type'])
+prostate_df['race'] = label_encoder.fit_transform(prostate_df['race'])
+prostate_df['ethnicity'] = label_encoder.fit_transform(prostate_df['ethnicity'])
+```
+
+### Codificacion de vital_status {-}
+
+```{python echo = FALSE}
+# Print unique values of encoded columns
+print("Valores únicos de vital_status en prostate_df: \n", prostate_df['vital_status'].unique(), "\n equivalentes a \n", df['vital_status'].unique())
+```
+
+### Codificacion de pathologic_stage {-}
+
+```{python echo = FALSE}
+print("Valores únicos de pathologic_stage en prostate_df: \n", prostate_df['pathologic_stage'].unique(), "\n equivalentes a \n", df['pathologic_stage'].unique())
+```
+
+### Codificacion de pathology_T_stage {-}
+
+```{python echo = FALSE}
+print("Valores únicos de pathology_T_stage en prostate_df: \n", prostate_df['pathology_T_stage'].unique(), "\n equivalentes a \n", df['pathology_T_stage'].unique())
+```
+
+### Codificacion de pathology_N_stage {-}
+
+```{python echo = FALSE}
+print("Valores únicos de pathology_N_stage en prostate_df: \n", prostate_df['pathology_N_stage'].unique(), "\n equivalentes a \n", df['pathology_N_stage'].unique())
+```
+
+### Codificacion de pathology_M_stage {-}
+
+```{python echo = FALSE}
+print("Valores únicos de pathology_M_stage en prostate_df: \n", prostate_df['pathology_M_stage'].unique(), "\n equivalentes a \n", df['pathology_M_stage'].unique())
+```
+
+### Codificacion de gender {-}
+
+```{python echo = FALSE}
+print("Valores únicos de gender en prostate_df: ", prostate_df['gender'].unique(), "\n equivalentes a \n", df['gender'].unique())
+```
+
+### Codificacion de radiation_therapy {-}
+
+```{python echo = FALSE}
+print("Valores únicos de radiation_therapy en prostate_df: \n", prostate_df['radiation_therapy'].unique(), "\n equivalentes a \n", df['radiation_therapy'].unique())
+```
+
+### Codificacion de histological_type {-}
+
+```{python echo = FALSE}
+print("Valores únicos de histological_type en prostate_df: \n", prostate_df['histological_type'].unique(), "\n equivalentes a \n", df['histological_type'].unique())
+```
+
+### Codificacion de race {-}
+
+```{python echo = FALSE}
+print("Valores únicos de race en prostate_df: \n", prostate_df['race'].unique(), "\n equivalentes a \n", df['race'].unique())
+```
+
+### Codificacion de ethnicity {-}
+
+```{python echo = FALSE}
+print("Valores únicos de ethnicity en prostate_df: \n", prostate_df['ethnicity'].unique(), "\n equivalentes a \n", df['ethnicity'].unique())
+```
+
+
+<br>
+<br>
+
+## Escalar los datos
+
+Muchos algoritmos de aprendizaje automático funcionan mejor cuando las características están en una escala relativamente similar y cerca de la distribución normal. MinMaxScaler, RobustScaler, StandardScaler y Normalizer son métodos scikit-learn para preprocesar datos para el aprendizaje automático. En este caso voy a usar `StandardScaler`.
+
+```{python}
+from sklearn.preprocessing import StandardScaler
+scaler=StandardScaler()
+
+df = prostate_df.copy()
+
+y = df['vital_status'] # Asignamos la variable target
+X = df.drop(['vital_status'], axis=1) # Asignamos el resto de variables
+scaler.fit(X) # Calculo la media para poder hacer la transformación
+
+X_scaled=scaler.transform(X) # Escalo los datos y los normalizo
+```
+
+
+<br>
+
+## Predicciones
+
+Ahora particionaré el dataset en training y test
+
+```{python}
+from sklearn.model_selection import train_test_split
+
+# Dividimos en sets de entrenamiento y test
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.7,random_state=33)
+```
+
+
+`r params$NOTE`
+
+<center> Definimos función para mostrar los resultados de las diferentes métricas </center>
+
+<br>
+
+```{python}
+from sklearn.metrics import confusion_matrix
+
+def mostrar_resultados(y_test, pred_y):
+    conf_matrix = confusion_matrix(y_test, pred_y)
+    plt.figure(figsize=(3, 3))
+    sns.heatmap(conf_matrix, xticklabels=["Positivo","Negativo"], yticklabels=["Positivo","Negativo"], annot=True, fmt="d", cmap="Blues", cbar=False);
+    plt.title("Matriz de confusión")
+    plt.ylabel('True class')
+    plt.xlabel('Predicted class')
+    plt.show()
+```
+
+</div>
+
+<br>
+
+### K-Neighbors Classifier
+
+Entrenamos el modelo
+
+```{python}
+from sklearn.neighbors import KNeighborsClassifier
+neigh = KNeighborsClassifier(n_neighbors=3)
+neigh.fit(X_train, y_train)
+
+# Predección en el conjunto de test
+y_pred = neigh.predict(X_test)
+```
+
+<br>
+
+##### Evaluación del modelo {-}
+
+<br>
+
+

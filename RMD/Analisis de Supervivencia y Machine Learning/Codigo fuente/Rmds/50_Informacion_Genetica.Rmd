@@ -1,0 +1,264 @@
+
+# Datos genéticos
+
+<br>
+
+<h2 class="R3"> Edicion de los datos genéticos </h2>
+
+Para que coincidan los identificadores clínicos, debe recortarse, ponerse en minúscula y sustituir `-` por `.`
+
+```{r Modif2, child='Test.Rmd'}
+```
+
+```{r Edicion_de_id_gene}
+# Pasamos los identificadores al mismo formato que los datos clínicos
+colnames(brcaData.gene) <- tolower(substr(colnames(brcaData.gene),1,12))
+colnames(brcaData.gene) <- gsub("-", ".", colnames(brcaData.gene))
+
+# Eliminamos los que estén duplicados
+brcaData.gene <- brcaData.gene[, !duplicated(colnames(brcaData.gene))]
+
+# Invertimos la matriz
+brcaData.gene <- t(brcaData.gene)
+```
+
+<h2 class="R3"> Edicion de los datos clínicos </h2>
+
+Es necesario reducir el número de instancias de los datos clínicos, ya que al haber menos identificadores que en los datos genéticos, algunas filas se quedarían sin ésta información.
+
+```{r}
+brcaData.cl$date_of_initial_pathologic_diagnosis <-getData(brcaData, "clinical")$date_of_initial_pathologic_diagnosis
+
+brcaData.cl <- t(brcaData.cl)
+
+toRemove <- c()
+for (id in colnames(brcaData.cl))
+{
+  ifelse(id %in% rownames(brcaData.gene),"",toRemove[[length(toRemove) + 1]] <- id)
+}
+brcaData.cl <- t(brcaData.cl)
+```
+
+```{r}
+brcaData.cl <- brcaData.cl[!(row.names(brcaData.cl) %in% as.character(toRemove)),]
+brcaData.cl <- as.data.frame(brcaData.cl)
+```
+
+```{r include = FALSE}
+# Conjunto de datos numéricos
+brcaData.cl$years_to_birth <- as.double(brcaData.cl$years_to_birth)
+brcaData.cl$date_of_initial_pathologic_diagnosis <- as.integer(brcaData.cl$date_of_initial_pathologic_diagnosis)
+brcaData.cl$number_of_lymph_nodes <- as.double(brcaData.cl$number_of_lymph_nodes)
+brcaData.cl$Tiempo <- as.double(brcaData.cl$Tiempo)
+
+
+# Conjunto de datos lógicos
+brcaData.cl$vital_status <- as.logical(brcaData.cl$vital_status)
+brcaData.cl$radiation_therapy <- as.logical(brcaData.cl$radiation_therapy)
+
+
+# Conjunto de datos de tipo factor
+brcaData.cl$pathologic_stage <- as.factor(brcaData.cl$pathologic_stage)
+brcaData.cl$pathology_T_stage <- as.factor(brcaData.cl$pathology_T_stage)
+brcaData.cl$pathology_N_stage <- as.factor(brcaData.cl$pathology_N_stage)
+brcaData.cl$pathology_M_stage <- as.factor(brcaData.cl$pathology_M_stage)
+brcaData.cl$gender <- as.factor(brcaData.cl$gender)
+brcaData.cl$histological_type <- as.factor(brcaData.cl$histological_type)
+brcaData.cl$race <- as.factor(brcaData.cl$race)
+brcaData.cl$ethnicity <- as.factor(brcaData.cl$ethnicity)
+```
+
+```{r include = FALSE, results='hide'}
+dim(brcaData.cl)
+dim(brcaData.gene)
+```
+
+```{r include = FALSE, results='hide'}
+brcaData.cl <- na.omit(brcaData.cl)
+dim(brcaData.cl)
+```
+
+
+```{r include = FALSE, results='hide'}
+brcaData.gene <- t(brcaData.gene)
+toRemove <- c()
+
+for (id in colnames(brcaData.gene))
+{
+  ifelse(id %in% rownames(brcaData.cl),"",toRemove[[length(toRemove) + 1]] <- id)
+}
+brcaData.gene <- t(brcaData.gene)
+```
+
+```{r include = FALSE, results='hide'}
+brcaData.gene <- brcaData.gene[!(row.names(brcaData.gene) %in% as.character(toRemove)),]
+brcaData.gene <- as.data.frame(brcaData.gene)
+brcaData.gene <- t(brcaData.gene)
+brcaData.gene <- data.matrix(brcaData.gene)
+```
+
+```{r}
+dim(brcaData.cl)
+dim(brcaData.gene)
+```
+
+<br>
+<br>
+<br>
+
+# Análisis de tiempo fijo
+
+<br>
+
+Antes de realizar el análisis de tiempo fijo, se necesita un threshold/Umbral para elejir el tiempo.
+
+```{r}
+timeData <- brcaData.cl[, 5]
+
+# Cálculo de la desviación típica
+sd <- sd(timeData)
+
+# Utilización de mediana y la desviación típica como threshold
+threshold <- 0.4 * (median(timeData) + sd)
+threshold
+```
+
+
+El uso de la mediana y la desviación típica como threshold tiene la ventaja de ser una forma objetiva de determinar un punto de corte en los datos. La mediana es un punto de corte natural para los datos, ya que divide los datos en dos partes iguales. Por otro lado, la desviación típica es una medida de dispersión que permite detectar valores atípicos o extremos en los datos y utilizarlos como threshold.
+
+`r params$NOTE`
+
+<center> A continuación voy a usar el siguiente código de R para poder estudiar el tiempo transcurrido desde un evento inicial hasta un evento final (recidiva o no) en un grupo de individuos. En este caso, el evento final está fijado en `898.3665`. </center>
+
+<br>
+
+```{r}
+brcaData.cl.fijo <- brcaData.cl[,-5] # Nuevo dataset, sin la variable de tiempo
+
+for(i in 1:nrow(brcaData.cl)) {
+
+  if (brcaData.cl[i, 5]<threshold & as.character(brcaData.cl[i, 2]) == "FALSE") {
+    brcaData.cl.fijo <- brcaData.cl.fijo[-i,]
+    # No se sabe en el umbral seleccionado
+  }
+  
+  if (brcaData.cl[i, 5]<threshold & as.character(brcaData.cl[i, 2]) == "TRUE") {
+    # Sin cambio: El individuo está vivo
+  }
+  
+  if (brcaData.cl[i, 5]>threshold & as.character(brcaData.cl[i, 2]) == "FALSE") {
+    # Sin cambio: El individuo no está vivo
+  }
+  
+  if (brcaData.cl[i, 5]>threshold & as.character(brcaData.cl[i, 2]) == "TRUE") {
+    brcaData.cl.fijo[i, 2] <- as.logical("FALSE")
+    # Con cambio: El estado pasa a ser `FALSE`
+  }
+  
+}
+```
+
+
+</div>
+
+Debemos de reducir el número de instancias de los datos genéticos, ya que al haber menos identificadores que en los datos clínicos (se han reducido al hacer la transformación a tiempo fijo), algunas se quedarían sin ésta información.
+
+
+```{r}
+toRemove <- c()
+
+for (id in colnames(brcaData.gene))
+{
+  ifelse(id %in% rownames(brcaData.cl.fijo),"",toRemove[[length(toRemove) + 1]] <- id)
+}
+brcaData.gene <- t(brcaData.gene)
+```
+
+```{r}
+brcaData.gene <- brcaData.gene[!(row.names(brcaData.gene) %in% as.character(toRemove)),]
+brcaData.gene <- as.data.frame(brcaData.gene)
+brcaData.gene <- t(brcaData.gene)
+brcaData.gene <- data.matrix(brcaData.gene)
+```
+
+```{r}
+dim(brcaData.cl.fijo)
+dim(brcaData.gene)
+```
+
+<br>
+
+## Paquete limma
+
+<br>
+
+A continuación voy a usar limma y Biobase:
+
+    limma es un paquete de R que proporciona herramientas para análisis de expresión génica y otras investigaciones en el campo de la biología molecular. Incluye funciones para el preprocesamiento de datos, como la eliminación de outliers, la normalización y la eliminación de efectos de plataforma, así como para la identificación de genes diferencialmente expresados. Limma también ofrece herramientas para la selección de genes relevantes y la visualización de los resultados.
+
+<br>
+
+    Biobase es un paquete de R que proporciona un conjunto de funciones y clases básicas para la manipulación y el análisis de datos de biología molecular. Incluye funciones para la lectura y escritura de datos en diferentes formatos, así como para la manipulación de objetos de datos específicos, como microarrays y secuencias de ADN. También proporciona un marco de trabajo para la creación de paquetes de análisis específicos para diferentes tipos de datos.
+
+
+```{r warning=FALSE}
+suppressMessages(library(limma))
+suppressMessages(library(Biobase))
+
+# rnaseq contiene los datos de RNA-Seq normalizados.
+rnaseq <- brcaData.gene
+
+# brcaData.cl contiene los datos clínicos de los pacientes
+brcaData.cl <- brcaData.cl.fijo
+
+
+# Objeto de tipo "ExpressionSet" a partir de los datos (escala logarítmica base 2 más 1) 
+datosES = ExpressionSet(log2(rnaseq+1))
+
+# Asignación los datos clínicos del paciente al objeto ExpressionSet
+pData(datosES) = brcaData.cl[sampleNames(datosES),]
+
+# Creación de una matriz de modelos para modelar la relación entre la expresión génica y el estadio de patología del paciente.
+mm <-  model.matrix(~pathology_M_stage, data=pData(datosES))
+
+# Ajuste del modelo con los datos de expresión génica
+fit <-  lmFit(datosES, mm)
+
+# Visualización de los coeficientes de ajustes del modelo
+head(coef(fit)) 
+
+# Matriz de contrastes para comparar los niveles de expresión génica entre diferentes condiciones (estadio de patología)
+contr <- makeContrasts(pathology_M_stagem1  - pathology_M_stagem0 , levels = colnames(coef(fit)))
+
+# Matriz de contrastes aplicada al modelo ajustado
+tmp <- contrasts.fit(fit, contr)
+
+# Estimación de la probabilidad bayesiana de los contrastes
+tmp <-  eBayes(tmp)
+
+# Selección de los genes con los valores de P más bajos
+top.table <- topTable(tmp, sort.by = "P", n = Inf)
+
+# Visualiza los primeros 10 genes de la tabla
+head(top.table, 10)
+
+# Genes que tienen un valor de P menor a 0.05 (genes diferencialmente expresados)
+length(which(top.table$adj.P.Val < 0.05))
+```
+```{r include = FALSE}
+brcaData.cl <- brcaData.cl.fijo[-(538:747),]
+```
+
+
+
+### Guardado de datos{-}
+
+Para poder seguir con la parte de Machine Learning, voy a guardar los datos en un archivo csv, ya que esta es una forma de exportar los datos muy común en diferentes lenguajes, especialmente en Python.
+
+```{r}
+write.csv(brcaData.cl,"Breast_Cancer.csv",row.names = TRUE)
+```
+
+<br>
+<br>
+<br>

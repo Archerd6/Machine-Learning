@@ -1,0 +1,63 @@
+
+# Información de los datos
+
+<br>
+
+Distribución de la fecha del primer diagnóstico
+
+```{r fig.align='center', dev='svg'}
+hist(brcaData.cl$date_of_initial_pathologic_diagnosis, main="Fecha del primer diagnóstico", xlab="Fecha", col = "lightblue")
+```
+
+<br>
+
+```{r}
+summary(brcaData.cl$date_of_initial_pathologic_diagnosis)
+```
+
+
+En general, la distribución de la fecha del primer diagnóstico presentada sugiere que la mayoría de los pacientes fueron diagnosticados en los últimos años, con la mayoría de los casos diagnosticados antes de 2010. Sin embargo, también hay un número significativo de pacientes diagnosticados antes de 2007. La distribución parece que no está sesgada, ya que la media y la mediana son similares.
+
+<br>
+
+Distribución de la edad de la población
+
+```{r fig.align='center', dev='svg'}
+hist(brcaData.cl$years_to_birth, main="Edad de la poblacion", xlab="Edad", col = "lightblue")
+```
+
+<br>
+
+```{r}
+summary(brcaData.cl$years_to_birth)
+```
+En general, la distribución de la edad de la población sugiere que la mayoría de los pacientes son mayores de 49 años y menores de 68 años, con una mediana de 59 años. La media y la mediana son similares, lo que indica que la distribución no está sesgada.
+
+<br>
+
+Proporciones de los distintos tipos histológicos
+
+```{r include = FALSE}
+v <- as.character(brcaData.cl$histological_type)
+v[which(v=="infiltrating carcinoma nos")] <- "other, specify"
+brcaData.cl$histological_type <- as.factor(v)
+```
+
+```{r, fig.align='center', dev='svg', fig.height=5, fig.width=9}
+coul <- brewer.pal(8, "Set3")
+barplot(prop.table(table(brcaData.cl$histological_type)), ylab="Porcentaje", col=coul, cex.names=0.4)
+```
+
+
+```{r}
+table(brcaData.cl$histological_type)
+```
+
+
+En general, la distribución de los distintos tipos histológicos muestra que el tipo histológico más común es `infiltrating ductal carcinoma`, seguido de `infiltrating lobular carcinoma` y `mucinous carcinoma`.
+
+Los tipos histológicos menos comunes en el conjunto de datos son `infiltrating carcinoma nos`, `medullary carcinoma` y `metaplastic carcinoma`.
+
+<br>
+<br>
+<br>

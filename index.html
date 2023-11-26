@@ -11,20 +11,21 @@
 
         .title {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 20px;
         }
 
-        .button-container {
+        .button-container,
+        .python {
             display: flex;
             flex-direction: row;
             justify-content: center;
-            gap: 20px;
-            margin-top: 50px;
+            gap: 10px;
+            margin-top: 15px;
         }
 
         .button {
             width: 30%;
-            padding: 20px;
+            padding: 10px;
             text-align: center;
             background-color: #3498db;
             color: white;
@@ -75,30 +76,38 @@
 <body>
     <h1 class="title">Selecciona una página para visitar:</h1>
     <div class="button-container">
+
+        <div class="python">
+            <div class="button" onclick="window.location.href='https://archerd6.github.io/Machine-Learning/Jupyter/1%20-%20Heart%20Disease%20Dataset%20Ejemplos/Heart%20Disease%20Dataset%20Ejemplos.html'">
+                <img src="Images/1 - Heart.jpg" alt="Descripción de la tercera página">
+                Enfermedad Cardíaca
+            </div>
+    
+            <div class="button" onclick="window.location.href='https://archerd6.github.io/Machine-Learning/Jupyter/2%20-%20Clasificacion%20-%20Prostate%20Cancer/Clasificacion%20-%20Prostate%20Cancer.html'">
+                <img src="Images/2 - Prostate.jpg" alt="Descripción de la segunda página">
+                Cáncer de Próstata
+            </div>
+    
+            <div class="button" onclick="window.location.href='https://archerd6.github.io/Machine-Learning/Jupyter/3%20-%20Principal%20component%20analysis/Principal%20component%20analysis.html'">
+                <img src="Images/3 - PCA.jpg" alt="Descripción de la primera página">
+                PCA
+            </div>
+    
+            <div class="github-link">
+                <a href="https://github.com/Archerd6/Machine-Learning" target="_blank">
+                    <img src="Images/0 - GitHub.png" alt="Logo de GitHub" width="30" height="30">
+                    &nbsp;
+    
+                    GitHub
+                </a>
+            </div>
+        </div>
+
+        <div class="RMD">
+            
+        </div>
         
-        <div class="button" onclick="window.location.href='https://archerd6.github.io/Machine-Learning/Jupyter/1%20-%20Heart%20Disease%20Dataset%20Ejemplos/Heart%20Disease%20Dataset%20Ejemplos.html'">
-            <img src="Images/1 - Heart.jpg" alt="Descripción de la tercera página">
-            Enfermedad Cardíaca
-        </div>
-
-        <div class="button" onclick="window.location.href='https://archerd6.github.io/Machine-Learning/Jupyter/2%20-%20Clasificacion%20-%20Prostate%20Cancer/Clasificacion%20-%20Prostate%20Cancer.html'">
-            <img src="Images/2 - Prostate.jpg" alt="Descripción de la segunda página">
-            Cáncer de Próstata
-        </div>
-
-        <div class="button" onclick="window.location.href='https://archerd6.github.io/Machine-Learning/Jupyter/3%20-%20Principal%20component%20analysis/Principal%20component%20analysis.html'">
-            <img src="Images/3 - PCA.jpg" alt="Descripción de la primera página">
-            PCA
-        </div>
-
-        <div class="github-link">
-            <a href="https://github.com/Archerd6/Machine-Learning" target="_blank">
-                <img src="Images/0 - GitHub.png" alt="Logo de GitHub" width="30" height="30">
-                &nbsp;
-
-                GitHub
-            </a>
-        </div>
+        
         
     </div>
 </body>

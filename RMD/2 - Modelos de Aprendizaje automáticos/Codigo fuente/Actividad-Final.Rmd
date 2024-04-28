@@ -9,6 +9,20 @@ output:
 css: styles.css
 ---
 
+```{r setup, include=FALSE}
+library(knitr)
+local({
+  hook_plot = knit_hooks$get('plot')
+  knit_hooks$set(plot = function(x, options) {
+    x = paste(x, collapse = '.')
+    if (!grepl('\\.svg', x)) return(hook_plot(x, options))
+    # read the content of the svg image and write it out without <?xml ... ?>
+    paste(readLines(x)[-1], collapse = '\n')
+  })
+})
+```
+
+
 ## **Modelos de Aprendizaje automático**
 
 
@@ -104,7 +118,7 @@ Realizaré una comparación de los modelos de `regresión logística`, `ANN`, `S
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: dodgerblue;">▸</span>  Representación de la variable `grade`:
 
 
-```{r eval=FALSE, dev = "svg", fig.height=4, fig.align = 'center'}
+```{r fig.align='center', dev='svglite'}
 barplot(table(datos_AF_clinico$grade)
         , main = "Representación Grado del tumor"
         , ylab = "Frecuencia"
@@ -112,10 +126,9 @@ barplot(table(datos_AF_clinico$grade)
         , col = c("#d0e0fc","#71a3f7","#3366d6")
         )
 ```
-
 <center>
-![](Grado.svg){ width=70% }
 </center>
+
 
 Podemos ver como, entre los datos, hay más instancias con la característica de `grade` 3 siendo el `grade` 1 el menos representado
 
@@ -123,16 +136,13 @@ Podemos ver como, entre los datos, hay más instancias con la característica de
 
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: dodgerblue;">▸</span>  Representación de diagrama de caja de la variable `age`:
 
-```{r eval=FALSE, dev = "svg", fig.height=4, fig.align = 'center'}
+```{r dev = "svglite", fig.align = 'center'}
 boxplot(datos_AF_clinico$age
         , col = "#fc8028"
         , main = "Representación de la Edad"
         )
 ```
-<br>
-<center>
-![](Edad.svg){ width=65% }
-</center>
+
 <br>
 
 Viendo la representación `Box-Plot` de la edad, podemos ver que la variable `age` tendría representación de valores entre 75 y 25 aproximadamente. Además, esta variable tendría asimetría positiva ya que la parte más larga de la caja es la parte superior a la mediana. 
@@ -163,12 +173,12 @@ df$Coolness_Color <-
 
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: dodgerblue;">▸</span>  Representación de las distribuciones de `receptores de estrógeno` respecto a la `edad`:
 
-```{r dev = "svg"}
+```{r dev = "svglite"}
 # La función table construye una tabla de resúmenes de datos para las distribuciones parciales de las etiquetas de cada variable
 tabla_bar_plot <- table(datos_AF_clinico$age, datos_AF_clinico$erihc)
 ```
 
-```{r dev = "svg", fig.align = 'center'}
+```{r dev = "svglite", fig.align = 'center'}
 barplot( height = tabla_bar_plot
          , names=c("Negative","Positive")
          , las = 1
@@ -745,7 +755,7 @@ data.frame(Metodo, area_roc, precision, recall, f1_score)
 
 Una representación de los `árboles de decisión` del dataset aumentado sería la siguiente:
 
-```{r dev = "svg", eval=FALSE, warning = FALSE, fig.height=3, fig.align = 'center'}
+```{r dev = "svglite", warning = FALSE, fig.height=3, fig.width=7, fig.align = 'center'}
 library(rpart)
 library(rpart.plot)
 fit <- rpart(pcr=="1"  ~ ., data=datos_AF_clinico_noNA)
@@ -753,9 +763,7 @@ par(mfrow = c(1,2), xpd = NA)
 rpart.plot(fit)
 ```
 
-<center>
-![](DT2.svg){ width=50% }
-</center>
+
 
 
 <br>

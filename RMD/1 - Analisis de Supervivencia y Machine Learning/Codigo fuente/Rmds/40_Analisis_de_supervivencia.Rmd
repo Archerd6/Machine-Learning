@@ -3,7 +3,7 @@
 
 <h2 class="R3"> Curva de supervivencia sin ninguna variable </h2>
 
-```{r}
+```{r, dev='svglite'}
 fit <- survfit(Surv(Tiempo, vital_status) ~ 1, data = brcaData.cl) # No coge ninguna variable
 
 p <- ggsurvplot(fit, conf.int = TRUE, censor = TRUE, cex.axis=3.0,
@@ -22,7 +22,7 @@ Con la información en esta tabla se puede observar la tasa de supervivencia a l
 
 <h2 class="R3"> Curva de supervivencia con la fecha de diagnóstico como variable </h2>
 
-```{r fig.height=6, fig.width=10, fig.align='center', dev = "svg"}
+```{r fig.height=6, fig.width=10, fig.align='center', dev='svglite'}
 fit <- survfit(Surv(Tiempo, vital_status) ~ date_of_initial_pathologic_diagnosis, data = brcaData.cl)
 
 p <- ggsurvplot(fit, conf.int = TRUE, censor = TRUE, cex.axis=3.0,
@@ -64,7 +64,7 @@ En este caso, se observa que el coeficiente para `date_of_initial_pathologic_dia
 
 <br>
 
-```{r fig.align='center'}
+```{r fig.align='center', dev='svglite'}
 temp <- cox.zph(res.cox) #print(temp)
 plot(temp)
 res.cox

@@ -5,7 +5,7 @@
 
 Distribución de la fecha del primer diagnóstico
 
-```{r fig.align='center', dev='svg'}
+```{r fig.align='center', dev='svglite'}
 hist(brcaData.cl$date_of_initial_pathologic_diagnosis, main="Fecha del primer diagnóstico", xlab="Fecha", col = "lightblue")
 ```
 
@@ -22,7 +22,11 @@ En general, la distribución de la fecha del primer diagnóstico presentada sugi
 
 Distribución de la edad de la población
 
-```{r fig.align='center', dev='svg'}
+```{r, include = FALSE, warning=FALSE}
+
+```
+
+```{r fig.align='center', dev='svglite'}
 hist(brcaData.cl$years_to_birth, main="Edad de la poblacion", xlab="Edad", col = "lightblue")
 ```
 
@@ -43,7 +47,7 @@ v[which(v=="infiltrating carcinoma nos")] <- "other, specify"
 brcaData.cl$histological_type <- as.factor(v)
 ```
 
-```{r, fig.align='center', dev='svg', fig.height=5, fig.width=9}
+```{r, fig.align='center', dev='svglite', fig.height=5, fig.width=9}
 coul <- brewer.pal(8, "Set3")
 barplot(prop.table(table(brcaData.cl$histological_type)), ylab="Porcentaje", col=coul, cex.names=0.4)
 ```

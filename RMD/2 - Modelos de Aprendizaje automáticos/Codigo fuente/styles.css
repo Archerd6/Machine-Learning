@@ -1,4 +1,4 @@
-/*Título del Rmarkdown*/
+/*Titulo del Rmarkdown*/
 h1.title {
     font-size: 28pt;
     color: #1a3988;
@@ -11,13 +11,7 @@ h2 {
     color: #1857ae;
     text-align: center;
 }
-/* Imagenes*/
-/*img {
-    border-radius: 8px;
-    max-width: 100%;
-    height: auto;
-    width: 55%;
-}*/
+
 
 .hljs-string {
     color: limegreen;
@@ -67,7 +61,16 @@ pre{
     font-size: 11pt;
 }
 
-/*Notación de nota*/
+/*Notacion de nota*/
 blockquote {
     border-left: 5px solid #1857ae;
+}
+
+/*Centrar svg*/
+svg{
+    position: relative;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
 }

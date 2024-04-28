@@ -40,7 +40,7 @@ La siguientes librerías son las utilizadas en este trabajo, siendo además usad
 # !pip3 install pandas
 # !pip3 install matplotlib
 # !pip3 install seaborn
-# !pip3 install sklearn
+# !pip3 install scikit-learn
 ```
 
 ###### Carga {-}
@@ -209,7 +209,8 @@ from sklearn.metrics import confusion_matrix
 
 def mostrar_resultados(y_test, pred_y):
     conf_matrix = confusion_matrix(y_test, pred_y)
-    plt.figure(figsize=(3, 3))
+    plt.figure(figsize=(4, 4))
+    
     sns.heatmap(conf_matrix, xticklabels=["Positivo","Negativo"], yticklabels=["Positivo","Negativo"], annot=True, fmt="d", cmap="Blues", cbar=False);
     plt.title("Matriz de confusión")
     plt.ylabel('True class')

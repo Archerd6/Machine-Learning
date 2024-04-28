@@ -5,6 +5,28 @@
 
 <br>
 
+```{r, include = FALSE, warning=FALSE}
+library(knitr)
+knit_hooks_ORIGINAL <- knit_hooks
+
+local({
+
+    hook_plot <- knit_hooks$get('plot')
+    knit_hooks$set(plot = function(x, options) {
+      x <- paste(x, collapse = '.')
+      if (!grepl('\\.svg', x)) return(hook_plot(x, options))
+      # read the content of the svg image and write it out without <?xml ... ?>
+      paste(readLines(x)[-1], collapse = '\n')
+    })
+
+})
+
+```
+
+```{r, include = FALSE, warning=FALSE}
+
+```
+
 ##### Cargamos las librerías que son necesarias {-}
 
 ```{r Librerias, warning=FALSE}
@@ -13,6 +35,8 @@ suppressMessages(library(dplyr))        # Librería usada para la manipulación 
 suppressMessages(library(kableExtra))   # Librería usada para generar tablas
 suppressMessages(library(survival))     # Librería base  para  análisis  de supervivencia
 suppressMessages(library(survminer))    # Librería usada para las curvas de supervivencia
+suppressMessages(library(limma))        # Librería usada para Análisis de datos y modelos lineales
+suppressMessages(library(reticulate))   # Librería usada para usar el motor de python
 ```
 
 ```{r, include = FALSE, warning=FALSE}

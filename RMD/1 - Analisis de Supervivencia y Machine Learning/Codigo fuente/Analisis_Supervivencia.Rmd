@@ -19,6 +19,7 @@ output:
     toc: true
     toc_float: true
     df_print: paged
+    dev: png
 
 params:
   NOTE: "<div class='alert alert-info'> " # blue: Accessory info to notice or skim
@@ -70,7 +71,7 @@ pred_y = neigh.predict(X_test)
 ```
 
 
-```{python fig.height=8, fig.width=10}
+```{python}
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 mostrar_resultados(y_test, y_pred)
